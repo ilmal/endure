@@ -10,15 +10,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
     <header>
-        <div class="logo"><img src="assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
+        <div class="logo"><img src="/assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
         <nav>
             <a href="#home" class="active">Karta</a>
             <a href="#stats">Statistik</a>
         </nav>
+        <button id="lang-toggle">EN</button>
         <div class="search">
             <input type="text" id="search-input" placeholder="Sök kameror...">
             <ul id="search-suggestions"></ul>
@@ -95,12 +96,6 @@
                 <section class="stats-insights">
                     <h2>Topp djur</h2>
                     <ul id="top-animals"></ul>
-                    <h2>Miljöfördelar</h2>
-                    <ul>
-                        <li>Minskad mänsklig störning av vilt</li>
-                        <li>Snabbare respons på populationsförändringar</li>
-                        <li>Bättre data för forskningsändamål</li>
-                    </ul>
                 </section>
             </div>
         </div>
@@ -114,6 +109,6 @@
 
     <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
-    <script type="module" src="assets/js/main.js"></script>
+    <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>

@@ -87,6 +87,27 @@ header .search {
     min-width: 220px;
 }
 
+#lang-toggle {
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    min-width: 48px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(29, 91, 44, 0.15);
+}
+
+#lang-toggle:hover {
+    background: var(--forest-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29, 91, 44, 0.25);
+}
+
 #search-input {
     width: 100%;
     padding: 10px 16px;
@@ -194,14 +215,6 @@ main {
     box-shadow: var(--card-shadow);
     min-height: 450px;
     background: radial-gradient(circle at 35% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
-    -webkit-mask-image: url('../images/sweden-mask.svg');
-    mask-image: url('../images/sweden-mask.svg');
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-position: center;
-    -webkit-mask-size: 85% auto;
-    mask-size: 85% auto;
 }
 
 #map .maplibregl-canvas {
@@ -223,14 +236,13 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease;
     color: var(--forest);
     font-size: 1.2rem;
 }
 
 .camera-marker:hover,
 .camera-marker.active {
-    transform: translateY(-3px) scale(1.08);
     background: var(--forest);
     color: #fff;
 }

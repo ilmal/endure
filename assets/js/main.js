@@ -1,4 +1,4 @@
-import { fakeData } from './data.js';
+import { fakeData } from '/assets/js/data.js';
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
 const MAP_BOUNDS = [[10, 54.5], [26, 70.5]];
@@ -32,6 +32,83 @@ const animalIconMap = {
     default: 'mdi:paw'
 };
 
+const translations = {
+    sv: {
+        title: "ViltKameraNätverk - Mock Dashboard",
+        logo: "ViltKameraNätverk",
+        navMap: "Karta",
+        navStats: "Statistik",
+        searchPlaceholder: "Sök kameror...",
+        activeCameras: "Aktiva kameror",
+        updatedRealtime: "Uppdaterad i realtid från mock-datan",
+        detectionsWeek: "Detektioner senaste veckan",
+        aiFiltered: "AI-filtrerade observationer",
+        validationRate: "Valideringsgrad",
+        confirmedAI: "Människor som bekräftat AI-resultat",
+        selectCamera: "Välj en kamera",
+        detections: "detektioner",
+        detectionsWord: "detektioner",
+        clickCamera: "Klicka på en kamera i kartan eller använd söket för att se ikonbaserade observationer.",
+        statsTitle: "Statistik & analys",
+        statsDesc: "Översikt av mock-datan från kamerorna. Kartan visar antal träffar per plats.",
+        totalCameras: "Totalt Kameror",
+        totalDetections: "Totalt Detektioner",
+        validatedObservations: "Validerade observationer",
+        cameraLocations: "Kamera platser",
+        dotSize: "Storleken på punkterna motsvarar antalet observationer senaste veckan.",
+        legendSmall: "2–4 träffar",
+        legendMedium: "5–7 träffar",
+        legendLarge: "8+ träffar",
+        topAnimals: "Topp djur",
+        footer: "Mock Prototype av Group A4 - November 2025 | <a href=\"https://github.com/your-repo\" target=\"_blank\">GitHub Repo</a>",
+        coordinates: "Koordinater",
+        noObservations: "Inga registrerade observationer ännu.",
+        confidence: "Konfidens:",
+        timestamp: "Tidsstämpel:",
+        confirm: "Bekräfta",
+        deny: "Neka",
+        close: "Stäng"
+    },
+    en: {
+        title: "WildlifeCameraNetwork - Mock Dashboard",
+        logo: "WildlifeCameraNetwork",
+        navMap: "Map",
+        navStats: "Statistics",
+        searchPlaceholder: "Search cameras...",
+        activeCameras: "Active Cameras",
+        updatedRealtime: "Updated in real-time from mock data",
+        detectionsWeek: "Detections last week",
+        aiFiltered: "AI-filtered observations",
+        validationRate: "Validation Rate",
+        confirmedAI: "People who confirmed AI results",
+        selectCamera: "Select a camera",
+        detections: "detections",
+        detectionsWord: "detections",
+        clickCamera: "Click on a camera in the map or use search to see icon-based observations.",
+        statsTitle: "Statistics & Analysis",
+        statsDesc: "Overview of mock data from the country's cameras. The map shows the number of hits per location.",
+        totalCameras: "Total Cameras",
+        totalDetections: "Total Detections",
+        validatedObservations: "Validated Observations",
+        cameraLocations: "Camera Locations",
+        dotSize: "The size of the dots corresponds to the number of observations last week.",
+        legendSmall: "2–4 hits",
+        legendMedium: "5–7 hits",
+        legendLarge: "8+ hits",
+        topAnimals: "Top Animals",
+        footer: "Mock Prototype by Group A4 - November 2025 | <a href=\"https://github.com/your-repo\" target=\"_blank\">GitHub Repo</a>",
+        coordinates: "Coordinates",
+        noObservations: "No registered observations yet.",
+        confidence: "Confidence:",
+        timestamp: "Timestamp:",
+        confirm: "Confirm",
+        deny: "Deny",
+        close: "Close"
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'sv';
+
 let confirmations = JSON.parse(localStorage.getItem('vilt_confirmations')) || {};
 let activeCameraId = null;
 let map;
@@ -62,7 +139,7 @@ function initMap() {
         container: 'map',
         style: MAP_STYLE_URL,
         center: [15.5, 63],
-        zoom: 4.6,
+        zoom: 4.5,
         attributionControl: false,
         pitchWithRotate: false,
         dragRotate: false,
@@ -73,12 +150,8 @@ function initMap() {
     map.addControl(new maplibregl.AttributionControl({ compact: true }));
 
     map.on('load', () => {
-        map.fitBounds(MAP_BOUNDS, { padding: 30, maxZoom: 6.3 });
-        map.setMaxBounds(MAP_BOUNDS);
-        map.scrollZoom.disable();
-        map.doubleClickZoom.disable();
-        map.keyboard.disable();
-        map.touchZoomRotate.disableRotation();
+        map.scrollZoom.enable();
+        map.doubleClickZoom.enable();
         renderCameraMarkers();
         renderDetectionLayer();
     });
@@ -112,7 +185,7 @@ function renderCameraMarkers() {
 
 function flyToCamera(camera, zoom = 6.1) {
     if (!map) return;
-    map.flyTo({ center: [camera.location.lng, camera.location.lat], zoom, essential: true });
+    map.jumpTo({ center: [camera.location.lng, camera.location.lat], zoom });
 }
 
 function renderDetectionLayer() {
@@ -185,12 +258,12 @@ function updateSidebar(camera) {
     const list = document.getElementById('detections-list');
 
     title.textContent = camera.name;
-    count.textContent = `${camera.detections.length} detektioner`;
-    description.textContent = `Koordinater ${camera.location.lat.toFixed(2)}, ${camera.location.lng.toFixed(2)}.`;
+    count.textContent = `${camera.detections.length} ${translations[currentLang].detectionsWord}`;
+    description.textContent = `${translations[currentLang].coordinates} ${camera.location.lat.toFixed(2)}, ${camera.location.lng.toFixed(2)}.`;
     list.innerHTML = '';
 
     if (!camera.detections.length) {
-        list.innerHTML = '<p>Inga registrerade observationer ännu.</p>';
+        list.innerHTML = `<p>${translations[currentLang].noObservations}</p>`;
         return;
     }
 
@@ -249,12 +322,12 @@ function openModal(detectionId) {
                 <span class="iconify" data-icon="${getDetectionIcon(detection)}" data-width="96" data-height="96"></span>
             </div>
             <h3>${detection.animal}</h3>
-            <p><strong>Konfidens:</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
-            <p><strong>Tidsstämpel:</strong> ${new Date(detection.timestamp).toLocaleString('sv-SE')}</p>
+            <p><strong>${translations[currentLang].confidence}</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
+            <p><strong>${translations[currentLang].timestamp}</strong> ${new Date(detection.timestamp).toLocaleString(currentLang === 'sv' ? 'sv-SE' : 'en-US')}</p>
             <div class="buttons">
-                <button class="confirm-btn" data-action="confirm" data-id="${detection.id}">Bekräfta</button>
-                <button class="deny-btn" data-action="deny" data-id="${detection.id}">Neka</button>
-                <button class="close-btn" data-action="close">Stäng</button>
+                <button class="confirm-btn" data-action="confirm" data-id="${detection.id}">${translations[currentLang].confirm}</button>
+                <button class="deny-btn" data-action="deny" data-id="${detection.id}">${translations[currentLang].deny}</button>
+                <button class="close-btn" data-action="close">${translations[currentLang].close}</button>
             </div>
         </div>
     `;
@@ -538,7 +611,43 @@ function initNavigation() {
     });
 }
 
+function updateLanguage() {
+    document.title = translations[currentLang].title;
+    document.documentElement.lang = currentLang;
+    document.querySelector('.logo').childNodes[1].textContent = translations[currentLang].logo;
+    document.querySelector('nav a[href="#home"]').textContent = translations[currentLang].navMap;
+    document.querySelector('nav a[href="#stats"]').textContent = translations[currentLang].navStats;
+    document.getElementById('search-input').placeholder = translations[currentLang].searchPlaceholder;
+    document.querySelector('#home-hero article:nth-child(1) h3').textContent = translations[currentLang].activeCameras;
+    document.querySelector('#home-hero article:nth-child(1) small').textContent = translations[currentLang].updatedRealtime;
+    document.querySelector('#home-hero article:nth-child(2) h3').textContent = translations[currentLang].detectionsWeek;
+    document.querySelector('#home-hero article:nth-child(2) small').textContent = translations[currentLang].aiFiltered;
+    document.querySelector('#home-hero article:nth-child(3) h3').textContent = translations[currentLang].validationRate;
+    document.querySelector('#home-hero article:nth-child(3) small').textContent = translations[currentLang].confirmedAI;
+    document.getElementById('sidebar-title').textContent = translations[currentLang].selectCamera;
+    document.getElementById('sidebar-description').textContent = translations[currentLang].clickCamera;
+    document.querySelector('.stats-header h1').textContent = translations[currentLang].statsTitle;
+    document.querySelector('.stats-header p').textContent = translations[currentLang].statsDesc;
+    document.querySelector('.stat-card:nth-child(1) h3').textContent = translations[currentLang].totalCameras;
+    document.querySelector('.stat-card:nth-child(2) h3').textContent = translations[currentLang].totalDetections;
+    document.querySelector('.stat-card:nth-child(3) h3').textContent = translations[currentLang].validatedObservations;
+    document.querySelector('.stats-map-headline h2').textContent = translations[currentLang].cameraLocations;
+    document.querySelector('.stats-map-headline p').textContent = translations[currentLang].dotSize;
+    document.querySelector('.stats-map-legend span:nth-child(1)').textContent = translations[currentLang].legendSmall;
+    document.querySelector('.stats-map-legend span:nth-child(2)').textContent = translations[currentLang].legendMedium;
+    document.querySelector('.stats-map-legend span:nth-child(3)').textContent = translations[currentLang].legendLarge;
+    document.querySelector('.stats-insights h2').textContent = translations[currentLang].topAnimals;
+    document.querySelector('footer p').innerHTML = translations[currentLang].footer;
+    document.getElementById('lang-toggle').textContent = currentLang === 'sv' ? 'EN' : 'SV';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    updateLanguage();
+    document.getElementById('lang-toggle').addEventListener('click', () => {
+        currentLang = currentLang === 'sv' ? 'en' : 'sv';
+        localStorage.setItem('lang', currentLang);
+        updateLanguage();
+    });
     mergeConfirmations();
     initMap();
     setupSearch();
