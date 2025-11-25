@@ -331,6 +331,12 @@ main {
     justify-content: center;
 }
 
+.emoji-icon {
+    font-size: 42px;
+    line-height: 1;
+    display: inline-block;
+}
+
 .detection-info h3 {
     margin-bottom: 4px;
 }

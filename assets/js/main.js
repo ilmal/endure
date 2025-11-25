@@ -2,40 +2,41 @@ import { fakeData } from '/assets/js/data.js';
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
 const MAP_BOUNDS = [[10, 54.5], [26, 70.5]];
+// Using emoji icons - free, no attribution needed, work everywhere
 const animalIconMap = {
-    'Fjällräv': 'material-symbols:forest', // Arctic fox - use forest as proxy
-    'Ren': 'mdi:deer', // Reindeer
-    'Lodjur': 'mdi:cat', // Lynx
-    'Fjälluggla': 'mdi:owl', // Snowy owl
-    'Järv': 'material-symbols:pets', // Wolverine - use generic animal
-    'Ripa': 'mdi:bird', // Ptarmigan
-    'Björn': 'mdi:bear', // Bear
-    'Varg': 'mdi:wolf', // Wolf
-    'Mård': 'material-symbols:pets', // Marten - use generic
-    'Utter': 'mdi:otter', // Otter
-    'Bäver': 'mdi:beaver', // Beaver
-    'Älg': 'mdi:deer', // Moose
-    'Vildsvin': 'mdi:pig', // Wild boar
-    'Räv': 'mdi:fox', // Fox
-    'Berguv': 'mdi:owl', // Eagle owl
-    'Tjäder': 'mdi:bird', // Capercaillie
-    'Rådjur': 'mdi:deer', // Roe deer
-    'Grävling': 'mdi:badger', // Badger
-    'Orre': 'mdi:bird', // Black grouse
-    'Havsörn': 'mdi:eagle', // Sea eagle
-    'Mink': 'mdi:otter', // Mink - use otter as proxy
-    'Trana': 'mdi:bird', // Crane
-    'Grågås': 'mdi:duck', // Greylag goose
-    'Hare': 'mdi:rabbit', // Hare
-    'Fälthare': 'mdi:rabbit', // Mountain hare
-    'Ejder': 'mdi:duck', // Eider duck
-    default: 'mdi:paw'
+    'Fjällräv': '🦊', // Arctic fox
+    'Ren': '🦌', // Reindeer
+    'Lodjur': '🐆', // Lynx
+    'Fjälluggla': '🦉', // Snowy owl
+    'Järv': '🦡', // Wolverine
+    'Ripa': '🐦', // Ptarmigan
+    'Björn': '🐻', // Bear
+    'Varg': '🐺', // Wolf
+    'Mård': '🦦', // Marten
+    'Utter': '🦦', // Otter
+    'Bäver': '🦫', // Beaver
+    'Älg': '🦌', // Moose
+    'Vildsvin': '🐗', // Wild boar
+    'Räv': '🦊', // Fox
+    'Berguv': '🦉', // Eagle owl
+    'Tjäder': '🦅', // Capercaillie
+    'Rådjur': '🦌', // Roe deer
+    'Grävling': '🦡', // Badger
+    'Orre': '🐦', // Black grouse
+    'Havsörn': '🦅', // Sea eagle
+    'Mink': '🦦', // Mink
+    'Trana': '🦢', // Crane
+    'Grågås': '🦆', // Greylag goose
+    'Hare': '🐇', // Hare
+    'Fälthare': '🐇', // Mountain hare
+    'Ejder': '🦆', // Eider duck
+    default: '🐾'
 };
 
 const translations = {
     sv: {
-        title: "ViltKameraNätverk - Mock Dashboard",
-        logo: "ViltKameraNätverk",
+        title: "Hållut - A4 Mock",
+        logo: "Hållut - A4 Mock",
         navMap: "Karta",
         navStats: "Statistik",
         searchPlaceholder: "Sök kameror...",
@@ -63,7 +64,7 @@ const translations = {
         filterAll: "Alla",
         filterTop: "Topp 5",
         filterAlpha: "A-Ö",
-        footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Skapad med hjälp av LLMs (Large Language Models)</small> | <a href=\"https://github.com/ilmal/endure\" target=\"_blank\">GitHub Repo</a>",
+        footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Emoji icons - No attribution needed</small> | <a href=\"https://github.com/ilmal/endure\" target=\"_blank\">GitHub Repo</a>",
         coordinates: "Koordinater",
         noObservations: "Inga registrerade observationer ännu.",
         confidence: "Konfidens:",
@@ -73,8 +74,8 @@ const translations = {
         close: "Stäng"
     },
     en: {
-        title: "WildlifeCameraNetwork - Mock Dashboard",
-        logo: "WildlifeCameraNetwork",
+        title: "Hållut - A4 Mock",
+        logo: "Hållut - A4 Mock",
         navMap: "Map",
         navStats: "Statistics",
         searchPlaceholder: "Search cameras...",
@@ -102,7 +103,7 @@ const translations = {
         filterAll: "All",
         filterTop: "Top 5",
         filterAlpha: "A-Z",
-        footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Created with assistance from LLMs (Large Language Models)</small> | <a href=\"https://github.com/ilmal/endure\" target=\"_blank\">GitHub Repo</a>",
+        footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Emoji icons - No attribution needed</small> | <a href=\"https://github.com/ilmal/endure\" target=\"_blank\">GitHub Repo</a>",
         coordinates: "Coordinates",
         noObservations: "No registered observations yet.",
         confidence: "Confidence:",
@@ -279,7 +280,7 @@ function updateSidebar(camera) {
 
         const iconWrapper = document.createElement('div');
         iconWrapper.classList.add('detection-icon');
-        iconWrapper.innerHTML = `<span class="iconify" data-icon="${getDetectionIcon(detection)}" data-width="52" data-height="52"></span>`;
+        iconWrapper.innerHTML = `<span class="emoji-icon">${getDetectionIcon(detection)}</span>`;
 
         const info = document.createElement('div');
         info.classList.add('detection-info');
@@ -312,8 +313,6 @@ function updateSidebar(camera) {
         card.appendChild(info);
         list.appendChild(card);
     });
-
-    refreshIcons();
 }
 
 function openModal(detectionId) {
@@ -341,7 +340,6 @@ function openModal(detectionId) {
     modal.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', handleModalAction);
     });
-    refreshIcons();
 }
 
 function handleModalAction(event) {
@@ -440,12 +438,6 @@ function getDetectionIcon(detection) {
     return animalIconMap[detection.animal] || animalIconMap.default;
 }
 
-function refreshIcons() {
-    if (window.Iconify && typeof window.Iconify.scan === 'function') {
-        window.Iconify.scan();
-    }
-}
-
 function updateHeroMetrics() {
     const totalCameras = fakeData.cameras.length;
     const totalDetections = fakeData.cameras.reduce((sum, camera) => sum + camera.detections.length, 0);
@@ -512,7 +504,7 @@ function renderAnimalStats(animalCounts, filter = 'all') {
         
         li.innerHTML = `
             <div class="animal-name">
-                <span class="animal-icon iconify" data-icon="${icon}"></span>
+                <span class="animal-icon emoji-icon">${icon}</span>
                 <span>${animal}</span>
             </div>
             <span class="animal-count">${count}</span>

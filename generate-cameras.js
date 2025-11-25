@@ -3,34 +3,35 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
+// Using emoji icons - free, no attribution needed, work everywhere
 const animalIconMap = {
-    'Fjällräv': 'material-symbols:forest', // Arctic fox - use forest as proxy
-    'Ren': 'mdi:deer', // Reindeer
-    'Lodjur': 'mdi:cat', // Lynx
-    'Fjälluggla': 'mdi:owl', // Snowy owl
-    'Järv': 'material-symbols:pets', // Wolverine - use generic animal
-    'Ripa': 'mdi:bird', // Ptarmigan
-    'Björn': 'mdi:bear', // Bear
-    'Varg': 'mdi:wolf', // Wolf
-    'Mård': 'material-symbols:pets', // Marten - use generic
-    'Utter': 'mdi:otter', // Otter
-    'Bäver': 'mdi:beaver', // Beaver
-    'Älg': 'mdi:deer', // Moose
-    'Vildsvin': 'mdi:pig', // Wild boar
-    'Räv': 'mdi:fox', // Fox
-    'Berguv': 'mdi:owl', // Eagle owl
-    'Tjäder': 'mdi:bird', // Capercaillie
-    'Rådjur': 'mdi:deer', // Roe deer
-    'Grävling': 'mdi:badger', // Badger
-    'Orre': 'mdi:bird', // Black grouse
-    'Havsörn': 'mdi:eagle', // Sea eagle
-    'Mink': 'mdi:otter', // Mink - use otter as proxy
-    'Trana': 'mdi:bird', // Crane
-    'Grågås': 'mdi:duck', // Greylag goose
-    'Hare': 'mdi:rabbit', // Hare
-    'Fälthare': 'mdi:rabbit', // Mountain hare
-    'Ejder': 'mdi:duck', // Eider duck
-    default: 'mdi:paw'
+    'Fjällräv': '🦊', // Arctic fox
+    'Ren': '🦌', // Reindeer
+    'Lodjur': '🐆', // Lynx
+    'Fjälluggla': '🦉', // Snowy owl
+    'Järv': '🦡', // Wolverine
+    'Ripa': '🐦', // Ptarmigan
+    'Björn': '🐻', // Bear
+    'Varg': '🐺', // Wolf
+    'Mård': '🦦', // Marten
+    'Utter': '🦦', // Otter
+    'Bäver': '🦫', // Beaver
+    'Älg': '🦌', // Moose
+    'Vildsvin': '🐗', // Wild boar
+    'Räv': '🦊', // Fox
+    'Berguv': '🦉', // Eagle owl
+    'Tjäder': '🦅', // Capercaillie
+    'Rådjur': '🦌', // Roe deer
+    'Grävling': '🦡', // Badger
+    'Orre': '🐦', // Black grouse
+    'Havsörn': '🦅', // Sea eagle
+    'Mink': '🦦', // Mink
+    'Trana': '🦢', // Crane
+    'Grågås': '🦆', // Greylag goose
+    'Hare': '🐇', // Hare
+    'Fälthare': '🐇', // Mountain hare
+    'Ejder': '🦆', // Eider duck
+    default: '🐾'
 };
 
 // Animal distribution by latitude zones in Sweden

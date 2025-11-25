@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViltKameraNätverk - Mock Dashboard</title>
+    <title>Hållut - A4 Mock</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
@@ -14,7 +15,12 @@
 </head>
 <body>
     <header>
-        <div class="logo"><img src="/assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
+        <div style="display:inline-flex;align-items:center;gap:10px;font-weight:700;font-family:Roboto, Georgia, sans-serif;">
+            <span style="width:40px;height:40px;border-radius:50%;background:#28a745;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);">
+                <span style="font-size:24px;">🦊</span>
+            </span>
+            <span style="font-size:16px;color:#0b3b22" class="logo">Hållut - A4 Mock</span>
+        </div>
         <nav>
             <a href="#home" class="active">Karta</a>
             <a href="#stats">Statistik</a>
@@ -116,7 +122,6 @@
     <div id="photo-modal" class="modal"></div>
 
     <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
-    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
