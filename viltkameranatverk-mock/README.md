@@ -1,12 +1,12 @@
 # ViltKameraNätverk - Mock Dashboard
 
-This is a mock frontend website for the "Nationellt nätverk av jaktkameror" project, demonstrating a wildlife camera network dashboard for Sweden powered by an interactive MapLibre map and curated wildlife imagery.
+This is a mock frontend website for the "Nationellt nätverk av jaktkameror" project, demonstrating a wildlife camera network dashboard for Sweden powered by an interactive MapLibre map, iconography-only detections and dense mock telemetry.
 
 ## Features
 
-- Interactive MapLibre GL map with animated camera markers and clustered detection dots
-- Detailed sidebar with thumbnails, AI confidence and validation states
-- Local photo modal with confirm/deny workflow persisted via `localStorage`
+- Interactive MapLibre GL map clipped to Sweden with Bootstrap-icon camera pins and clustered detection dots
+- Detailed sidebar with Iconify-powered animal glyphs, AI confidence and validation states
+- Local modal workflow for confirming/denying detections (no real photos stored) persisted via `localStorage`
 - Hero metrics and statistics view (including validation progress and top animals)
 - Enhanced search with instant filtering and suggestions
 - Responsive design tuned for desktop/tablet/mobile
@@ -14,8 +14,9 @@ This is a mock frontend website for the "Nationellt nätverk av jaktkameror" pro
 ## Technologies
 
 - HTML5, CSS3 (glassmorphism-inspired theme) and vanilla JavaScript (ES6+)
-- MapLibre GL JS + GeoJSON overlays for the interactive Sweden map
-- Font Awesome 6 for iconography
+- MapLibre GL JS + GeoJSON overlays for the interactive Sweden map (both hero and stats views)
+- Font Awesome 6 + Bootstrap Icons for UI chrome and camera pins
+- Iconify (Material Design Icons set) for animal glyphs instead of real images
 - Google Fonts (Roboto + Georgia)
 - Browser `localStorage` for persisting confirmations
 
@@ -30,24 +31,23 @@ This is a mock frontend website for the "Nationellt nätverk av jaktkameror" pro
 ```
 viltkameranatverk-mock/
 ├── index.html
-├── about.html
 ├── stats.html
-├── help.html
 ├── assets/
 │   ├── css/styles.css
 │   ├── js/
 │   │   ├── main.js
 │   │   └── data.js
 │   └── images/
+│       └── sweden-mask.svg
 └── README.md
 ```
 
 ## Usage
 
-- Navigate between map, about, stats and help views via the sticky header
-- Hover or click cameras on the MapLibre map to inspect detections in the sidebar
+- Navigate between kartan och statistiken via den klibbiga navigationen
+- Hovera eller klicka kameror på MapLibre-kartan (pins + heat dots) för att se detaljer i sidopanelen
 - Use the search bar to filter cameras; suggestions highlight matching locations
-- Open a detection to view the high-resolution photo and confirm/deny the AI guess
+- Open a detection to view the icon-based observation metadata and confirm/deny AI-förslaget
 - Refresh the page to verify that confirmations persist locally
 
-This is a static mock prototype with fake data (Unsplash imagery) intended for design discussions and demos.
+This is a static mock prototype with helt fiktiv ikondata (inga riktiga foton) avsett för design- och konceptdiskussioner.

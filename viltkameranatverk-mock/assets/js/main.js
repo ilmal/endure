@@ -1,12 +1,42 @@
 import { fakeData } from './data.js';
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
-const MAP_BOUNDS = [[10, 54], [26, 70]];
+const MAP_BOUNDS = [[10, 54.5], [26, 70.5]];
+const animalIconMap = {
+    'Fjällräv': 'mdi:fox',
+    'Ren': 'mdi:deer',
+    'Lodjur': 'mdi:tiger',
+    'Fjälluggla': 'mdi:owl',
+    'Järv': 'mdi:paw',
+    'Ripa': 'mdi:bird',
+    'Björn': 'mdi:bear',
+    'Varg': 'mdi:wolf',
+    'Mård': 'mdi:raccoon',
+    'Utter': 'mdi:fish',
+    'Bäver': 'mdi:beaver',
+    'Älg': 'mdi:deer',
+    'Vildsvin': 'mdi:pig',
+    'Räv': 'mdi:fox',
+    'Berguv': 'mdi:owl',
+    'Tjäder': 'mdi:bird',
+    'Rådjur': 'mdi:deer',
+    'Grävling': 'mdi:raccoon',
+    'Orre': 'mdi:bird',
+    'Havsörn': 'mdi:eagle',
+    'Mink': 'mdi:otter',
+    'Trana': 'mdi:crane',
+    'Grågås': 'mdi:duck',
+    'Hare': 'mdi:rabbit',
+    'Fälthare': 'mdi:rabbit',
+    'Ejder': 'mdi:duck',
+    default: 'mdi:paw'
+};
 
 let confirmations = JSON.parse(localStorage.getItem('vilt_confirmations')) || {};
 let activeCameraId = null;
 let map;
 let cameraMarkers = [];
+let statsMap;
 
 function mergeConfirmations() {
     fakeData.cameras.forEach(camera => {
@@ -33,14 +63,22 @@ function initMap() {
         style: MAP_STYLE_URL,
         center: [15.5, 63],
         zoom: 4.6,
-        attributionControl: false
+        attributionControl: false,
+        pitchWithRotate: false,
+        dragRotate: false,
+        renderWorldCopies: false
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new maplibregl.AttributionControl({ compact: true }));
 
     map.on('load', () => {
-        map.fitBounds(MAP_BOUNDS, { padding: 40, maxZoom: 6.2 });
+        map.fitBounds(MAP_BOUNDS, { padding: 30, maxZoom: 6.3 });
+        map.setMaxBounds(MAP_BOUNDS);
+        map.scrollZoom.disable();
+        map.doubleClickZoom.disable();
+        map.keyboard.disable();
+        map.touchZoomRotate.disableRotation();
         renderCameraMarkers();
         renderDetectionLayer();
     });
@@ -54,12 +92,12 @@ function renderCameraMarkers() {
         const el = document.createElement('button');
         el.className = 'camera-marker';
         el.title = `${camera.name} (${camera.detections.length} detektioner)`;
-        el.innerHTML = '<span></span>';
+        el.innerHTML = '<i class="bi bi-geo-alt-fill"></i>';
         el.addEventListener('click', () => {
             activeCameraId = camera.id;
             updateSidebar(camera);
             highlightMarkers(id => id === camera.id);
-            map.flyTo({ center: [camera.location.lng, camera.location.lat], zoom: 6.2, essential: true });
+            flyToCamera(camera);
         });
 
         const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
@@ -68,6 +106,13 @@ function renderCameraMarkers() {
         marker.__cameraId = camera.id;
         cameraMarkers.push(marker);
     });
+
+    highlightMarkers(() => true);
+}
+
+function flyToCamera(camera, zoom = 6.1) {
+    if (!map) return;
+    map.flyTo({ center: [camera.location.lng, camera.location.lat], zoom, essential: true });
 }
 
 function renderDetectionLayer() {
@@ -152,13 +197,17 @@ function updateSidebar(camera) {
     camera.detections.forEach(detection => {
         const card = document.createElement('article');
         card.classList.add('detection-card');
-        card.innerHTML = `
-            <img src="${detection.thumbnail_url || detection.photo_url}" alt="${detection.animal}">
-            <div>
-                <h3>${detection.animal}</h3>
-                <p>${new Date(detection.timestamp).toLocaleString('sv-SE')}</p>
-                <p>AI-förslag: ${(detection.confidence * 100).toFixed(1)}%</p>
-            </div>
+
+        const iconWrapper = document.createElement('div');
+        iconWrapper.classList.add('detection-icon');
+        iconWrapper.innerHTML = `<span class="iconify" data-icon="${getDetectionIcon(detection)}" data-width="52" data-height="52"></span>`;
+
+        const info = document.createElement('div');
+        info.classList.add('detection-info');
+        info.innerHTML = `
+            <h3>${detection.animal}</h3>
+            <p>${new Date(detection.timestamp).toLocaleString('sv-SE')}</p>
+            <p>AI-förslag: ${(detection.confidence * 100).toFixed(1)}%</p>
         `;
 
         const status = document.createElement('span');
@@ -175,14 +224,17 @@ function updateSidebar(camera) {
         }
 
         const button = document.createElement('button');
-        button.textContent = 'Visa foto';
+        button.textContent = 'Visa observation';
         button.addEventListener('click', () => openModal(detection.id));
 
-        const rightCol = card.querySelector('div');
-        rightCol.appendChild(status);
-        rightCol.appendChild(button);
+        info.appendChild(status);
+        info.appendChild(button);
+        card.appendChild(iconWrapper);
+        card.appendChild(info);
         list.appendChild(card);
     });
+
+    refreshIcons();
 }
 
 function openModal(detectionId) {
@@ -193,7 +245,9 @@ function openModal(detectionId) {
     modal.classList.add('open');
     modal.innerHTML = `
         <div class="modal-content">
-            <img src="${detection.photo_url}" alt="${detection.animal}">
+            <div class="modal-icon">
+                <span class="iconify" data-icon="${getDetectionIcon(detection)}" data-width="96" data-height="96"></span>
+            </div>
             <h3>${detection.animal}</h3>
             <p><strong>Konfidens:</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
             <p><strong>Tidsstämpel:</strong> ${new Date(detection.timestamp).toLocaleString('sv-SE')}</p>
@@ -208,6 +262,7 @@ function openModal(detectionId) {
     modal.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', handleModalAction);
     });
+    refreshIcons();
 }
 
 function handleModalAction(event) {
@@ -285,7 +340,7 @@ function setupSearch() {
                 activeCameraId = camera.id;
                 updateSidebar(camera);
                 highlightMarkers(id => id === camera.id);
-                map.flyTo({ center: [camera.location.lng, camera.location.lat], zoom: 6.2, essential: true });
+                flyToCamera(camera);
             });
             suggestions.appendChild(li);
         });
@@ -299,6 +354,17 @@ function setupSearch() {
             hideSuggestions();
         }
     });
+}
+
+function getDetectionIcon(detection) {
+    if (detection.icon) return detection.icon;
+    return animalIconMap[detection.animal] || animalIconMap.default;
+}
+
+function refreshIcons() {
+    if (window.Iconify && typeof window.Iconify.scan === 'function') {
+        window.Iconify.scan();
+    }
 }
 
 function updateHeroMetrics() {
@@ -326,7 +392,8 @@ function loadStats() {
     document.getElementById('total-cameras').textContent = totalCameras;
     document.getElementById('total-detections').textContent = totalDetections;
     document.getElementById('validated-count').textContent = validated;
-    document.getElementById('detection-progress').style.width = `${Math.min((totalDetections / 16) * 100, 100)}%`;
+    const detectionGoal = totalCameras * 4;
+    document.getElementById('detection-progress').style.width = detectionGoal ? `${Math.min((totalDetections / detectionGoal) * 100, 100)}%` : '0%';
     document.getElementById('validation-progress').style.width = totalDetections ? `${(reviewed / totalDetections) * 100}%` : '0%';
 
     const animalCounts = {};
@@ -346,73 +413,96 @@ function loadStats() {
     });
 
     renderStatsMap();
+    if (statsMap) {
+        statsMap.resize();
+    }
 }
-
 function renderStatsMap() {
-    const svg = document.getElementById('stats-sweden-map');
-    if (!svg) return;
+    const container = document.getElementById('stats-map-gl');
+    if (!container || typeof maplibregl === 'undefined') return;
 
-    const SWEDEN_PATH = 'M180 10 L210 70 L190 110 L215 170 L195 210 L225 270 L205 330 L230 380 L210 450 L240 520 L215 600 L250 690 L220 760 L160 770 L120 720 L100 650 L85 560 L60 500 L80 430 L60 360 L90 300 L70 240 L105 180 L90 140 L120 90 L150 50 Z';
-    svg.innerHTML = '';
+    const data = buildStatsGeoJson();
 
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-    gradient.setAttribute('id', 'stats-gradient');
-    gradient.setAttribute('x1', '0%');
-    gradient.setAttribute('y1', '0%');
-    gradient.setAttribute('x2', '0%');
-    gradient.setAttribute('y2', '100%');
+    if (!statsMap) {
+        statsMap = new maplibregl.Map({
+            container: 'stats-map-gl',
+            style: MAP_STYLE_URL,
+            center: [15.5, 63],
+            zoom: 4.7,
+            interactive: false,
+            attributionControl: false,
+            renderWorldCopies: false
+        });
 
-    const stopTop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stopTop.setAttribute('offset', '0%');
-    stopTop.setAttribute('stop-color', '#d2f5e5');
-
-    const stopBottom = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stopBottom.setAttribute('offset', '100%');
-    stopBottom.setAttribute('stop-color', '#6cb78a');
-
-    gradient.appendChild(stopTop);
-    gradient.appendChild(stopBottom);
-    defs.appendChild(gradient);
-    svg.appendChild(defs);
-
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', SWEDEN_PATH);
-    path.setAttribute('fill', 'url(#stats-gradient)');
-    path.setAttribute('stroke', 'rgba(255,255,255,0.9)');
-    path.setAttribute('stroke-width', '2');
-    svg.appendChild(path);
-
-    fakeData.cameras.forEach(camera => {
-        const coords = projectToMiniMap(camera.location.lat, camera.location.lng);
-        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        dot.setAttribute('cx', coords.x);
-        dot.setAttribute('cy', coords.y);
-        dot.setAttribute('r', 4);
-        dot.setAttribute('fill', '#fff');
-        dot.setAttribute('stroke', '#1d5b2c');
-        svg.appendChild(dot);
-    });
+        statsMap.on('load', () => {
+            statsMap.fitBounds(MAP_BOUNDS, { padding: 30, maxZoom: 5.6 });
+            addStatsLayer(data);
+        });
+    } else if (statsMap.isStyleLoaded()) {
+        addStatsLayer(data);
+    } else {
+        statsMap.once('load', () => addStatsLayer(data));
+    }
 }
 
-function projectToMiniMap(lat, lng) {
-    const bounds = { latMin: 55, latMax: 69.5, lngMin: 11, lngMax: 24.5 };
-    const width = 320;
-    const height = 780;
-    const xRatio = (lng - bounds.lngMin) / (bounds.lngMax - bounds.lngMin);
-    const yRatio = 1 - (lat - bounds.latMin) / (bounds.latMax - bounds.latMin);
+function buildStatsGeoJson() {
     return {
-        x: xRatio * width,
-        y: yRatio * height
+        type: 'FeatureCollection',
+        features: fakeData.cameras.map(camera => ({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [camera.location.lng, camera.location.lat]
+            },
+            properties: {
+                detections: camera.detections.length
+            }
+        }))
     };
+}
+
+function addStatsLayer(data) {
+    if (!statsMap) return;
+
+    if (!statsMap.getSource('stats-cameras')) {
+        statsMap.addSource('stats-cameras', { type: 'geojson', data });
+        statsMap.addLayer({
+            id: 'stats-circles',
+            type: 'circle',
+            source: 'stats-cameras',
+            paint: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['get', 'detections'],
+                    2, 6,
+                    6, 14,
+                    10, 24
+                ],
+                'circle-color': 'rgba(90,200,160,0.65)',
+                'circle-stroke-width': 1.5,
+                'circle-stroke-color': '#ffffff'
+            }
+        });
+        statsMap.addLayer({
+            id: 'stats-count-labels',
+            type: 'symbol',
+            source: 'stats-cameras',
+            layout: {
+                'text-field': ['to-string', ['get', 'detections']],
+                'text-size': 12
+            },
+            paint: {
+                'text-color': '#1d5b2c'
+            }
+        });
+    } else {
+        statsMap.getSource('stats-cameras').setData(data);
+    }
 }
 
 const routes = {
     '': 'home',
     '#home': 'home',
-    '#about': 'about',
-    '#stats': 'stats',
-    '#help': 'help'
+    '#stats': 'stats'
 };
 
 function navigateTo(page) {
@@ -458,7 +548,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialHash = location.hash || '#home';
     const initialPage = routes[initialHash] || 'home';
     navigateTo(initialPage);
-    highlightMarkers(() => true);
 });
 
 window.closeModal = closeModal;

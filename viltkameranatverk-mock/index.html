@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
@@ -15,10 +16,8 @@
     <header>
         <div class="logo"><img src="assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
         <nav>
-            <a href="#home" class="active">Hem/Karta</a>
-            <a href="#about">Om Projektet</a>
+            <a href="#home" class="active">Karta</a>
             <a href="#stats">Statistik</a>
-            <a href="#help">Hjälp</a>
         </nav>
         <div class="search">
             <input type="text" id="search-input" placeholder="Sök kameror...">
@@ -53,51 +52,17 @@
                         <h2 id="sidebar-title">Välj en kamera</h2>
                         <span id="sidebar-count">0 detektioner</span>
                     </div>
-                    <p id="sidebar-description">Klicka på en kamera i kartan eller använd söket för att se detaljer.</p>
+                    <p id="sidebar-description">Klicka på en kamera i kartan eller använd söket för att se ikonbaserade observationer.</p>
                     <div id="detections-list"></div>
                 </aside>
             </div>
         </div>
 
-        <div id="about" class="page">
-            <h1>Om Nationellt nätverk av jaktkameror</h1>
-            <p>
-                Det nationella nätverket binder samman fältkameror från Skåne till Lappland. AI-stödd analys hjälper
-                Naturvårdsverket, forskare och jägare att snabbt upptäcka förändringar i bestånd, smittspridning och
-                skyddsvärd fauna. Plattformen i denna mockup visar hur datan kan presenteras på ett intuitivt sätt.
-            </p>
-            <div class="info-grid" style="margin-top:24px;">
-                <article class="info-card">
-                    <h3>Problemidentifiering</h3>
-                    <ul>
-                        <li>Stora avstånd gör manuell inventering ineffektiv.</li>
-                        <li>Händelser missas när kameror läses av för sent.</li>
-                        <li>Data är spridd mellan ideella aktörer och myndigheter.</li>
-                    </ul>
-                    <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80" alt="Svensk skog">
-                </article>
-                <article class="info-card">
-                    <h3>Idéskiss</h3>
-                    <p>
-                        En molnkopplad plattform där kameror skickar bilder och metadata direkt till AI-modeller
-                        tränade på nordiskt vilt. Resultat och kartlager synkas i realtid så att användare kan filtrera,
-                        validera och exportera data.
-                    </p>
-                    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80" alt="Varg i vildmark">
-                </article>
-                <article class="info-card">
-                    <h3>Effekter</h3>
-                    <p>
-                        Tidiga varningar om invasiva arter, bättre beslutsunderlag för avskjutning och förbättrad
-                        samexistens mellan människa och djur. Plattformen stödjer också delning till forskningsprojekt.
-                    </p>
-                    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80" alt="Rådjur i skymning">
-                </article>
-            </div>
-        </div>
-
         <div id="stats" class="page">
-            <h1>Statistik Översikt</h1>
+            <header class="stats-header">
+                <h1>Statistik & analys</h1>
+                <p>Översikt av mock-datan från landets kameror. Kartan visar antal träffar per plats utan att släppa utanför Sverige.</p>
+            </header>
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>Totalt Kameror</h3>
@@ -114,43 +79,29 @@
                     <div class="progress-bar"><span id="validation-progress" style="width:0%"></span></div>
                 </div>
             </div>
-            <h2>Topp Djur</h2>
-            <ul id="top-animals"></ul>
-            <h2>Kamera Platser</h2>
-            <div id="stats-map">
-                <svg id="stats-sweden-map" viewBox="0 0 320 780"></svg>
-            </div>
-            <h2>Miljöfördelar</h2>
-            <ul>
-                <li>Minskad mänsklig störning av vilt</li>
-                <li>Snabbare respons på populationsförändringar</li>
-                <li>Bättre data för forskningsändamål</li>
-            </ul>
-        </div>
-
-        <div id="help" class="page">
-            <h1>Hjälp & FAQ</h1>
-            <div class="info-grid">
-                <article class="info-card">
-                    <h3>Hur använder jag kartan?</h3>
-                    <p>Kamerapunkterna ligger i ett MapLibre-lager över Sverige. Hover för att se namn, klicka för detaljer och foton.</p>
-                    <p>Sök efter ort eller kameranamn för att hoppa direkt.</p>
-                </article>
-                <article class="info-card">
-                    <h3>Vad gör Bekräfta/Neka?</h3>
-                    <p>
-                        Funktionen simulerar mänsklig kvalitetssäkring. Dina val sparas i browserns localStorage och
-                        används för att visa valideringsgrad i statistiken.
-                    </p>
-                </article>
-                <article class="info-card">
-                    <h3>Integritet</h3>
-                    <p>
-                        I ett skarpt system maskeras människor och fordon automatiskt innan data distribueras.
-                        Kameraägare kan även sätta spärrzoner och automatisk gallring.
-                    </p>
-                    <p><strong>Kontakt:</strong> groupa4@example.com</p>
-                </article>
+            <div class="stats-detail">
+                <section class="stats-map-wrapper">
+                    <div class="stats-map-headline">
+                        <h2>Kamera platser</h2>
+                        <p>Storleken på punkterna motsvarar antalet observationer senaste veckan.</p>
+                    </div>
+                    <div id="stats-map-gl"></div>
+                    <div class="stats-map-legend">
+                        <span><i class="legend-dot legend-small"></i>2–4 träffar</span>
+                        <span><i class="legend-dot legend-medium"></i>5–7 träffar</span>
+                        <span><i class="legend-dot legend-large"></i>8+ träffar</span>
+                    </div>
+                </section>
+                <section class="stats-insights">
+                    <h2>Topp djur</h2>
+                    <ul id="top-animals"></ul>
+                    <h2>Miljöfördelar</h2>
+                    <ul>
+                        <li>Minskad mänsklig störning av vilt</li>
+                        <li>Snabbare respons på populationsförändringar</li>
+                        <li>Bättre data för forskningsändamål</li>
+                    </ul>
+                </section>
             </div>
         </div>
     </main>
@@ -162,6 +113,7 @@
     <div id="photo-modal" class="modal"></div>
 
     <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>
