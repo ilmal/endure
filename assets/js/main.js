@@ -745,7 +745,13 @@ function initNavigation() {
 function updateLanguage() {
     document.title = translations[currentLang].title;
     document.documentElement.lang = currentLang;
-    document.querySelector('.logo').childNodes[1].textContent = translations[currentLang].logo;
+    
+    // Update logo text (changed to direct textContent since HTML structure changed)
+    const logoElement = document.querySelector('.logo');
+    if (logoElement) {
+        logoElement.textContent = translations[currentLang].logo;
+    }
+    
     document.querySelector('nav a[href="#home"]').textContent = translations[currentLang].navMap;
     document.querySelector('nav a[href="#stats"]').textContent = translations[currentLang].navStats;
     document.getElementById('search-input').placeholder = translations[currentLang].searchPlaceholder;
