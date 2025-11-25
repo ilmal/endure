@@ -271,6 +271,9 @@ main {
     box-shadow: var(--card-shadow);
     border: 1px solid rgba(0,0,0,0.05);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 75vh;
 }
 
 .sidebar-headline {
@@ -296,9 +299,11 @@ main {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-height: 55vh;
     overflow-y: auto;
     padding-right: 6px;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: 16px;
 }
 
 .detection-card {
@@ -533,10 +538,21 @@ footer {
     background: var(--forest-dark);
     color: #fff;
     text-align: center;
-    padding: 24px;
+    padding: 32px 24px;
+    line-height: 1.6;
 }
 
 footer a { color: var(--sunset); }
+
+footer strong {
+    font-size: 1.1rem;
+    color: var(--accent);
+}
+
+footer small {
+    opacity: 0.85;
+    font-size: 0.85rem;
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -545,7 +561,11 @@ footer a { color: var(--sunset); }
     }
 
     #sidebar {
-        max-height: 60vh;
+        max-height: 65vh;
+    }
+
+    #detections-list {
+        padding-bottom: 20px;
     }
 
     .stats-detail {
