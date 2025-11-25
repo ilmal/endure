@@ -638,7 +638,18 @@ function updateLanguage() {
     document.querySelector('.stats-map-legend span:nth-child(3)').textContent = translations[currentLang].legendLarge;
     document.querySelector('.stats-insights h2').textContent = translations[currentLang].topAnimals;
     document.querySelector('footer p').innerHTML = translations[currentLang].footer;
-    document.getElementById('lang-toggle').textContent = currentLang === 'sv' ? 'EN' : 'SV';
+    
+    const langToggle = document.getElementById('lang-toggle');
+    const flagIcon = langToggle.querySelector('.flag-icon');
+    const langText = langToggle.querySelector('.lang-text');
+    
+    if (currentLang === 'sv') {
+        flagIcon.textContent = '🇬🇧';
+        langText.textContent = 'EN';
+    } else {
+        flagIcon.textContent = '🇸🇪';
+        langText.textContent = 'SV';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -91,15 +91,28 @@ header .search {
     background: var(--forest);
     color: #fff;
     border: none;
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    min-width: 48px;
+    min-width: 75px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(29, 91, 44, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
+
+#lang-toggle .flag-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+#lang-toggle .lang-text {
+    line-height: 1;
 }
 
 #lang-toggle:hover {
