@@ -490,6 +490,8 @@ function loadStats() {
     }
 }
 
+let selectedAnimalInStats = null;
+
 function renderAnimalStats(animalCounts, filter = 'all') {
     const list = document.getElementById('top-animals');
     list.innerHTML = '';
@@ -516,9 +518,26 @@ function renderAnimalStats(animalCounts, filter = 'all') {
             <span class="animal-count">${count}</span>
         `;
         
+        li.dataset.animal = animal;
+        
         li.addEventListener('click', () => {
-            filterDetectionsByAnimal(animal);
+            // Toggle selection
+            if (selectedAnimalInStats === animal) {
+                selectedAnimalInStats = null;
+                li.classList.remove('selected');
+                highlightCamerasOnStatsMap(null);
+            } else {
+                // Remove previous selection
+                document.querySelectorAll('#top-animals li').forEach(item => item.classList.remove('selected'));
+                selectedAnimalInStats = animal;
+                li.classList.add('selected');
+                highlightCamerasOnStatsMap(animal);
+            }
         });
+        
+        if (selectedAnimalInStats === animal) {
+            li.classList.add('selected');
+        }
         
         list.appendChild(li);
     });
@@ -570,15 +589,16 @@ function renderStatsMap() {
         statsMap = new maplibregl.Map({
             container: 'stats-map-gl',
             style: MAP_STYLE_URL,
-            center: [15.5, 63],
-            zoom: 4.7,
+            center: [16, 62.5],
+            zoom: 4.4,
             interactive: false,
             attributionControl: false,
             renderWorldCopies: false
         });
 
         statsMap.on('load', () => {
-            statsMap.fitBounds(MAP_BOUNDS, { padding: 30, maxZoom: 5.6 });
+            // Tighter bounds and more zoom for better Sweden focus
+            statsMap.fitBounds([[11, 55.5], [24, 69]], { padding: 20, maxZoom: 4.8 });
             addStatsLayer(data);
         });
     } else if (statsMap.isStyleLoaded()) {
@@ -620,9 +640,24 @@ function addStatsLayer(data) {
                     6, 14,
                     10, 24
                 ],
-                'circle-color': 'rgba(90,200,160,0.65)',
-                'circle-stroke-width': 1.5,
-                'circle-stroke-color': '#ffffff'
+                'circle-color': [
+                    'case',
+                    ['get', 'highlighted'],
+                    'rgba(246, 193, 107, 0.9)', // Highlighted color (gold)
+                    'rgba(90,200,160,0.65)' // Default color (green)
+                ],
+                'circle-stroke-width': [
+                    'case',
+                    ['get', 'highlighted'],
+                    2.5,
+                    1.5
+                ],
+                'circle-stroke-color': [
+                    'case',
+                    ['get', 'highlighted'],
+                    '#f6c16b',
+                    '#ffffff'
+                ]
             }
         });
         statsMap.addLayer({
@@ -634,12 +669,45 @@ function addStatsLayer(data) {
                 'text-size': 12
             },
             paint: {
-                'text-color': '#1d5b2c'
+                'text-color': [
+                    'case',
+                    ['get', 'highlighted'],
+                    '#8B4513',
+                    '#1d5b2c'
+                ]
             }
         });
     } else {
         statsMap.getSource('stats-cameras').setData(data);
     }
+}
+
+function highlightCamerasOnStatsMap(animal) {
+    if (!statsMap || !statsMap.getSource('stats-cameras')) return;
+    
+    // Build new GeoJSON with highlighted property
+    const camerasWithAnimal = animal 
+        ? fakeData.cameras.filter(camera => 
+            camera.detections.some(d => d.animal === animal)
+          ).map(c => c.id)
+        : [];
+    
+    const data = {
+        type: 'FeatureCollection',
+        features: fakeData.cameras.map(camera => ({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [camera.location.lng, camera.location.lat]
+            },
+            properties: {
+                detections: camera.detections.length,
+                highlighted: animal ? camerasWithAnimal.includes(camera.id) : false
+            }
+        }))
+    };
+    
+    statsMap.getSource('stats-cameras').setData(data);
 }
 
 const routes = {
