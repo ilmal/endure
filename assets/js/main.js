@@ -67,6 +67,7 @@ const translations = {
         footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Emoji icons - No attribution needed</small> | <a href=\"https://github.com/ilmal/endure\" target=\"_blank\">GitHub Repo</a>",
         coordinates: "Koordinater",
         noObservations: "Inga registrerade observationer ännu.",
+        imagePlaceholder: "Här kommer en faktisk bild från jaktkameran",
         confidence: "Konfidens:",
         timestamp: "Tidsstämpel:",
         confirm: "Bekräfta",
@@ -96,6 +97,7 @@ const translations = {
         validatedObservations: "Validated Observations",
         cameraLocations: "Camera Locations",
         dotSize: "The size of the dots corresponds to the number of observations last week.",
+        imagePlaceholder: "Here will be an actual trail camera image",
         legendSmall: "2–4 hits",
         legendMedium: "5–7 hits",
         legendLarge: "8+ hits",
@@ -323,16 +325,21 @@ function openModal(detectionId) {
     modal.classList.add('open');
     modal.innerHTML = `
         <div class="modal-content">
-            <div class="modal-icon">
-                <span class="iconify" data-icon="${getDetectionIcon(detection)}" data-width="96" data-height="96"></span>
+            <div class="modal-image-placeholder">
+                <span class="emoji-icon" style="font-size: 64px; margin-bottom: 16px;">${getDetectionIcon(detection)}</span>
+                <p style="color: #666; font-style: italic; text-align: center; margin: 0;">
+                    ${translations[currentLang].imagePlaceholder}
+                </p>
             </div>
-            <h3>${detection.animal}</h3>
-            <p><strong>${translations[currentLang].confidence}</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
-            <p><strong>${translations[currentLang].timestamp}</strong> ${new Date(detection.timestamp).toLocaleString(currentLang === 'sv' ? 'sv-SE' : 'en-US')}</p>
-            <div class="buttons">
-                <button class="confirm-btn" data-action="confirm" data-id="${detection.id}">${translations[currentLang].confirm}</button>
-                <button class="deny-btn" data-action="deny" data-id="${detection.id}">${translations[currentLang].deny}</button>
-                <button class="close-btn" data-action="close">${translations[currentLang].close}</button>
+            <div class="modal-details">
+                <h3>${detection.animal}</h3>
+                <p><strong>${translations[currentLang].confidence}</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
+                <p><strong>${translations[currentLang].timestamp}</strong> ${new Date(detection.timestamp).toLocaleString(currentLang === 'sv' ? 'sv-SE' : 'en-US')}</p>
+                <div class="buttons">
+                    <button class="confirm-btn" data-action="confirm" data-id="${detection.id}">${translations[currentLang].confirm}</button>
+                    <button class="deny-btn" data-action="deny" data-id="${detection.id}">${translations[currentLang].deny}</button>
+                    <button class="close-btn" data-action="close">${translations[currentLang].close}</button>
+                </div>
             </div>
         </div>
     `;
@@ -583,7 +590,7 @@ function renderStatsMap() {
             style: MAP_STYLE_URL,
             center: [15.5, 62.5],
             zoom: 5.2,
-            interactive: false,
+            interactive: true,
             attributionControl: false,
             renderWorldCopies: false
         });
@@ -592,6 +599,7 @@ function renderStatsMap() {
             // Match main map's tight Sweden focus
             statsMap.fitBounds([[10, 54.5], [26, 70.5]], { padding: 40, maxZoom: 5.2 });
             addStatsLayer(data);
+            setupStatsMapInteraction();
         });
     } else if (statsMap.isStyleLoaded()) {
         addStatsLayer(data);
@@ -702,6 +710,102 @@ function highlightCamerasOnStatsMap(animal) {
     
     statsMap.getSource('stats-cameras').setData(data);
 }
+
+function setupStatsMapInteraction() {
+    if (!statsMap) return;
+
+    // Change cursor on hover
+    statsMap.on('mouseenter', 'stats-circles', () => {
+        statsMap.getCanvas().style.cursor = 'pointer';
+    });
+
+    statsMap.on('mouseleave', 'stats-circles', () => {
+        statsMap.getCanvas().style.cursor = '';
+    });
+
+    // Click handler for camera markers
+    statsMap.on('click', 'stats-circles', (e) => {
+        if (!e.features || !e.features.length) return;
+        
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const detections = e.features[0].properties.detections;
+        
+        // Find the camera by coordinates
+        const camera = fakeData.cameras.find(c => 
+            Math.abs(c.location.lng - coordinates[0]) < 0.0001 && 
+            Math.abs(c.location.lat - coordinates[1]) < 0.0001
+        );
+        
+        if (!camera) return;
+
+        // Create popup with camera info
+        const animalSummary = getAnimalSummaryForCamera(camera);
+        
+        new maplibregl.Popup({ closeButton: true, closeOnClick: true })
+            .setLngLat(coordinates)
+            .setHTML(`
+                <div style="padding: 8px; min-width: 200px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 1rem;">${camera.name}</h4>
+                    <p style="margin: 4px 0; font-size: 0.9rem;">
+                        <strong>${translations[currentLang].detections}:</strong> ${detections}
+                    </p>
+                    <p style="margin: 4px 0; font-size: 0.9rem;">
+                        <strong>${translations[currentLang].coordinates}:</strong><br>
+                        ${camera.location.lat.toFixed(4)}°N, ${camera.location.lng.toFixed(4)}°E
+                    </p>
+                    ${animalSummary ? `
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
+                            <strong style="font-size: 0.85rem;">Top djur:</strong>
+                            <div style="margin-top: 4px;">
+                                ${animalSummary}
+                            </div>
+                        </div>
+                    ` : ''}
+                    <button 
+                        onclick="window.viewCameraFromStats('${camera.id}')" 
+                        style="margin-top: 12px; width: 100%; padding: 8px; background: var(--forest); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;"
+                    >
+                        ${translations[currentLang].selectCamera}
+                    </button>
+                </div>
+            `)
+            .addTo(statsMap);
+    });
+}
+
+function getAnimalSummaryForCamera(camera) {
+    if (!camera.detections || !camera.detections.length) return '';
+    
+    const animalCounts = {};
+    camera.detections.forEach(d => {
+        animalCounts[d.animal] = (animalCounts[d.animal] || 0) + 1;
+    });
+    
+    const topAnimals = Object.entries(animalCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+    
+    return topAnimals.map(([animal, count]) => 
+        `<span style="font-size: 0.85rem; display: inline-block; margin-right: 8px;">
+            ${getDetectionIcon(animal)} ${animal} (${count})
+        </span>`
+    ).join('');
+}
+
+// Global function to handle camera view from stats map
+window.viewCameraFromStats = function(cameraId) {
+    const camera = fakeData.cameras.find(c => c.id === cameraId);
+    if (!camera) return;
+    
+    navigateTo('home');
+    
+    setTimeout(() => {
+        activeCameraId = camera.id;
+        updateSidebar(camera);
+        highlightMarkers(id => id === camera.id);
+        flyToCamera(camera);
+    }, 100);
+};
 
 const routes = {
     '': 'home',
