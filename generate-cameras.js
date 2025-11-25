@@ -4,33 +4,58 @@ const path = require('path');
 const https = require('https');
 
 const animalIconMap = {
-    'Fjällräv': 'mdi:fox',
-    'Ren': 'mdi:deer',
-    'Lodjur': 'mdi:cat',
-    'Fjälluggla': 'mdi:owl',
-    'Järv': 'mdi:badger',
-    'Ripa': 'mdi:bird',
-    'Björn': 'mdi:bear',
-    'Varg': 'mdi:wolf',
-    'Mård': 'mdi:ferret',
-    'Utter': 'mdi:otter',
-    'Bäver': 'mdi:beaver',
-    'Älg': 'mdi:deer',
-    'Vildsvin': 'mdi:pig',
-    'Räv': 'mdi:fox',
-    'Berguv': 'mdi:owl',
-    'Tjäder': 'mdi:bird',
-    'Rådjur': 'mdi:deer',
-    'Grävling': 'mdi:badger',
-    'Orre': 'mdi:bird',
-    'Havsörn': 'mdi:eagle',
-    'Mink': 'mdi:otter',
-    'Trana': 'mdi:bird',
-    'Grågås': 'mdi:duck',
-    'Hare': 'mdi:rabbit',
-    'Fälthare': 'mdi:rabbit',
-    'Ejder': 'mdi:duck',
+    'Fjällräv': 'material-symbols:forest', // Arctic fox - use forest as proxy
+    'Ren': 'mdi:deer', // Reindeer
+    'Lodjur': 'mdi:cat', // Lynx
+    'Fjälluggla': 'mdi:owl', // Snowy owl
+    'Järv': 'material-symbols:pets', // Wolverine - use generic animal
+    'Ripa': 'mdi:bird', // Ptarmigan
+    'Björn': 'mdi:bear', // Bear
+    'Varg': 'mdi:wolf', // Wolf
+    'Mård': 'material-symbols:pets', // Marten - use generic
+    'Utter': 'mdi:otter', // Otter
+    'Bäver': 'mdi:beaver', // Beaver
+    'Älg': 'mdi:deer', // Moose
+    'Vildsvin': 'mdi:pig', // Wild boar
+    'Räv': 'mdi:fox', // Fox
+    'Berguv': 'mdi:owl', // Eagle owl
+    'Tjäder': 'mdi:bird', // Capercaillie
+    'Rådjur': 'mdi:deer', // Roe deer
+    'Grävling': 'mdi:badger', // Badger
+    'Orre': 'mdi:bird', // Black grouse
+    'Havsörn': 'mdi:eagle', // Sea eagle
+    'Mink': 'mdi:otter', // Mink - use otter as proxy
+    'Trana': 'mdi:bird', // Crane
+    'Grågås': 'mdi:duck', // Greylag goose
+    'Hare': 'mdi:rabbit', // Hare
+    'Fälthare': 'mdi:rabbit', // Mountain hare
+    'Ejder': 'mdi:duck', // Eider duck
     default: 'mdi:paw'
+};
+
+// Animal distribution by latitude zones in Sweden
+// Sweden latitude ranges: ~55°N (south) to ~69°N (north)
+const animalDistribution = {
+    // Far North (65-69°N) - Arctic/Mountain species
+    farNorth: {
+        lat: [65, 69],
+        animals: ['Fjällräv', 'Ren', 'Fjälluggla', 'Ripa', 'Järv']
+    },
+    // North (61-65°N) - Northern forests
+    north: {
+        lat: [61, 65],
+        animals: ['Björn', 'Varg', 'Lodjur', 'Älg', 'Tjäder', 'Orre', 'Berguv', 'Järv', 'Ren', 'Havsörn', 'Hare']
+    },
+    // Central (58-61°N) - Mixed forests
+    central: {
+        lat: [58, 61],
+        animals: ['Älg', 'Varg', 'Lodjur', 'Rådjur', 'Räv', 'Grävling', 'Bäver', 'Utter', 'Mård', 'Tjäder', 'Orre', 'Havsörn', 'Trana', 'Hare', 'Mink']
+    },
+    // South (55-58°N) - Agricultural and deciduous forests
+    south: {
+        lat: [55, 58],
+        animals: ['Rådjur', 'Vildsvin', 'Räv', 'Grävling', 'Bäver', 'Utter', 'Mård', 'Havsörn', 'Trana', 'Grågås', 'Ejder', 'Hare', 'Fälthare', 'Mink']
+    }
 };
 
 const suffixes = [
@@ -41,8 +66,6 @@ const suffixes = [
     'Stream Point', 'Forest Edge', 'Hilltop', 'Deep Woods', 'Clearwater', 'Stone Bridge', 'Moss Rock',
     'Silent Grove', 'Windswept Peak', 'Hidden Glade', 'Ancient Oak', 'Whispering Pines'
 ];
-
-const animals = Object.keys(animalIconMap).filter(key => key !== 'default');
 
 // Function to generate a random timestamp in the last 7 days (from Nov 25, 2025)
 function generateTimestamp() {
@@ -55,7 +78,7 @@ function generateTimestamp() {
 // OpenCage API key for geocoding verification
 const OPENCAGE_API_KEY = 'e11c2b0cb27948bc885b20edeb5f69fe';
 
-// Function to verify if coordinates are in Sweden using OpenCage API
+// Function to verify if coordinates are in Sweden and not in water using OpenCage API
 async function verifyCoordinatesInSweden(lat, lng) {
     return new Promise((resolve) => {
         const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${OPENCAGE_API_KEY}&no_annotations=1&language=en`;
@@ -76,8 +99,25 @@ async function verifyCoordinatesInSweden(lat, lng) {
                 try {
                     const result = JSON.parse(data);
                     if (result.results && result.results.length > 0) {
-                        const countryCode = result.results[0].components?.country_code?.toUpperCase();
-                        resolve(countryCode === 'SE');
+                        const components = result.results[0].components;
+                        const countryCode = components?.country_code?.toUpperCase();
+                        const category = components?._category;
+                        const type = components?._type;
+                        
+                        // Check if in Sweden
+                        if (countryCode !== 'SE') {
+                            resolve(false);
+                            return;
+                        }
+                        
+                        // Check if in water (reject water bodies)
+                        if (category === 'natural' || category === 'water' || type === 'body_of_water') {
+                            console.log(`   💧 Water detected at ${lat},${lng} (${category}/${type}), skipping...`);
+                            resolve(false);
+                            return;
+                        }
+                        
+                        resolve(true);
                     } else {
                         // No results, assume not in Sweden
                         resolve(false);
@@ -130,10 +170,30 @@ async function generateValidSwedishCoordinates(maxAttempts = 10) {
     };
 }
 
-// Function to generate a single detection
+// Function to get available animals based on latitude
+function getAnimalsForLatitude(lat) {
+    const availableAnimals = [];
+    
+    // Check each zone and add animals if latitude falls within range
+    Object.entries(animalDistribution).forEach(([zone, data]) => {
+        if (lat >= data.lat[0] && lat <= data.lat[1]) {
+            availableAnimals.push(...data.animals);
+        }
+    });
+    
+    // Remove duplicates and return
+    return [...new Set(availableAnimals)];
+}
+
+// Function to generate a single detection based on camera location
 let detectionIdCounter = 12005;
-function generateDetection() {
-    const animal = animals[Math.floor(Math.random() * animals.length)];
+function generateDetection(lat) {
+    const availableAnimals = getAnimalsForLatitude(lat);
+    
+    // If no animals available (shouldn't happen), fall back to all animals
+    const animalList = availableAnimals.length > 0 ? availableAnimals : Object.keys(animalIconMap).filter(key => key !== 'default');
+    
+    const animal = animalList[Math.floor(Math.random() * animalList.length)];
     return {
         id: detectionIdCounter++,
         timestamp: generateTimestamp(),
@@ -147,14 +207,17 @@ function generateDetection() {
 let cameraIdCounter = 13;
 async function generateCamera(index, total) {
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-    const numDetections = 10 + Math.floor(Math.random() * 11); // 10-20
-    const detections = [];
-    for (let i = 0; i < numDetections; i++) {
-        detections.push(generateDetection());
-    }
     
     // Generate and verify coordinates are in Sweden
     const { lat, lng } = await generateValidSwedishCoordinates();
+    
+    // Generate detections based on the camera's latitude
+    const numDetections = 10 + Math.floor(Math.random() * 11); // 10-20
+    const detections = [];
+    for (let i = 0; i < numDetections; i++) {
+        detections.push(generateDetection(lat));
+    }
+    
     console.log(`✓ Camera ${index + 1}/${total} generated at ${lat},${lng}`);
     
     return {

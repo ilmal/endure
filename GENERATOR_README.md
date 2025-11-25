@@ -78,14 +78,40 @@ const newCameras = [
 - ✅ **Auto-inject mode** - Automatically updates data.js with `--inject` flag
 - 🌍 **OpenCage API verification** - All coordinates verified to be in Sweden
 - 🎲 **High randomness** - Truly random coordinates across all of Sweden (55-69.5°N, 10.5-24.5°E)
-- � **Smart retry logic** - Automatically retries if coordinates fall outside Sweden (up to 10 attempts)
+- 🐻 **Geographic animal distribution** - Animals appear only in their realistic habitats!
+  - **Far North (65-69°N)**: Arctic fox, Reindeer, Ptarmigan, Snowy owl, Wolverine
+  - **North (61-65°N)**: Bear, Wolf, Lynx, Moose, Eagle owl, Capercaillie
+  - **Central (58-61°N)**: Mixed forest species (Moose, Wolf, Lynx, Roe deer, Beaver, Otter)
+  - **South (55-58°N)**: Wild boar, Roe deer, Cranes, Geese, Badger (no bears/wolves!)
+- 🔄 **Smart retry logic** - Automatically retries if coordinates fall outside Sweden (up to 10 attempts)
 - 🚀 **Async batch processing** - Generates 10 cameras at a time with parallel execution
-- 🇸� **100% Swedish locations** - Every coordinate verified via reverse geocoding
+- 🇸🇪 **100% Swedish locations** - Every coordinate verified via reverse geocoding
 - 🦌 **Realistic wildlife data** - Swedish animals with proper MDI icons
 - 🎲 **Random detections** - 10-20 detections per camera
 - ⏰ **Recent timestamps** - Last 7 days from Nov 25, 2025
 - 💪 **High confidence** - Scores between 0.65 and 0.95
 - 🏷️ **Thematic names** - "Kamera [Suffix]" format
+
+## Geographic Animal Distribution
+
+The generator uses **realistic geographic zones** based on actual Swedish wildlife habitats. Animals only appear in regions where they naturally occur!
+
+### Distribution Zones
+
+| Zone | Latitude | Key Species |
+|------|----------|-------------|
+| **Far North** | 65-69°N | Fjällräv (Arctic Fox), Ren (Reindeer), Fjälluggla (Snowy Owl), Ripa (Ptarmigan), Järv (Wolverine) |
+| **North** | 61-65°N | Björn (Bear), Varg (Wolf), Lodjur (Lynx), Älg (Moose), Berguv (Eagle Owl), Tjäder (Capercaillie), Orre (Black Grouse), Havsörn (Sea Eagle) |
+| **Central** | 58-61°N | Älg (Moose), Varg (Wolf), Lodjur (Lynx), Rådjur (Roe Deer), Räv (Fox), Grävling (Badger), Bäver (Beaver), Utter (Otter), Mård (Marten) |
+| **South** | 55-58°N | Rådjur (Roe Deer), Vildsvin (Wild Boar), Räv (Fox), Grävling (Badger), Trana (Crane), Grågås (Greylag Goose), Ejder (Eider), Fälthare (Mountain Hare) |
+
+### Examples
+
+- **Camera at 67°N (Far North)**: Will only see Arctic species like Reindeer, Arctic Fox, Wolverine
+- **Camera at 63°N (North)**: May see Bears, Wolves, Moose, but NO Wild Boar
+- **Camera at 56°N (South)**: May see Wild Boar, Geese, but NO Bears or Wolves
+
+This creates realistic and scientifically accurate wildlife distributions across Sweden!
 
 ## Animal Icons
 

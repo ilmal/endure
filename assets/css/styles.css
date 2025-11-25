@@ -501,8 +501,16 @@ main {
     border: 1px solid rgba(0,0,0,0.03);
 }
 
+.stats-insights {
+    display: flex;
+    flex-direction: column;
+    height: calc(75vh + 12px);
+    min-height: 650px;
+}
+
 #stats-map-gl {
-    height: 480px;
+    height: 75vh;
+    min-height: 650px;
     border-radius: 24px;
     margin-top: 12px;
     overflow: hidden;
@@ -575,7 +583,6 @@ main {
     list-style: none;
     flex: 1;
     overflow-y: auto;
-    max-height: 350px;
 }
 
 .stats-insights li {
@@ -662,12 +669,35 @@ footer small {
     .stats-detail {
         grid-template-columns: 1fr;
     }
+
+    #stats-map-gl {
+        height: 60vh;
+        min-height: 500px;
+    }
+
+    .stats-insights {
+        height: auto;
+        min-height: auto;
+    }
+
+    .stats-insights ul {
+        max-height: 400px;
+    }
 }
 
 @media (max-width: 640px) {
     header {
         flex-direction: column;
         gap: 12px;
+    }
+
+    #stats-map-gl {
+        height: 50vh;
+        min-height: 400px;
+    }
+
+    .stats-insights ul {
+        max-height: 300px;
     }
 
     header nav {

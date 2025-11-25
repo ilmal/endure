@@ -3,32 +3,32 @@ import { fakeData } from '/assets/js/data.js';
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
 const MAP_BOUNDS = [[10, 54.5], [26, 70.5]];
 const animalIconMap = {
-    'Fjällräv': 'mdi:fox',
-    'Ren': 'mdi:deer',
-    'Lodjur': 'mdi:cat',
-    'Fjälluggla': 'mdi:owl',
-    'Järv': 'mdi:badger',
-    'Ripa': 'mdi:bird',
-    'Björn': 'mdi:bear',
-    'Varg': 'mdi:wolf',
-    'Mård': 'mdi:ferret',
-    'Utter': 'mdi:otter',
-    'Bäver': 'mdi:beaver',
-    'Älg': 'mdi:deer',
-    'Vildsvin': 'mdi:pig',
-    'Räv': 'mdi:fox',
-    'Berguv': 'mdi:owl',
-    'Tjäder': 'mdi:bird',
-    'Rådjur': 'mdi:deer',
-    'Grävling': 'mdi:badger',
-    'Orre': 'mdi:bird',
-    'Havsörn': 'mdi:eagle',
-    'Mink': 'mdi:otter',
-    'Trana': 'mdi:bird',
-    'Grågås': 'mdi:duck',
-    'Hare': 'mdi:rabbit',
-    'Fälthare': 'mdi:rabbit',
-    'Ejder': 'mdi:duck',
+    'Fjällräv': 'material-symbols:forest', // Arctic fox - use forest as proxy
+    'Ren': 'mdi:deer', // Reindeer
+    'Lodjur': 'mdi:cat', // Lynx
+    'Fjälluggla': 'mdi:owl', // Snowy owl
+    'Järv': 'material-symbols:pets', // Wolverine - use generic animal
+    'Ripa': 'mdi:bird', // Ptarmigan
+    'Björn': 'mdi:bear', // Bear
+    'Varg': 'mdi:wolf', // Wolf
+    'Mård': 'material-symbols:pets', // Marten - use generic
+    'Utter': 'mdi:otter', // Otter
+    'Bäver': 'mdi:beaver', // Beaver
+    'Älg': 'mdi:deer', // Moose
+    'Vildsvin': 'mdi:pig', // Wild boar
+    'Räv': 'mdi:fox', // Fox
+    'Berguv': 'mdi:owl', // Eagle owl
+    'Tjäder': 'mdi:bird', // Capercaillie
+    'Rådjur': 'mdi:deer', // Roe deer
+    'Grävling': 'mdi:badger', // Badger
+    'Orre': 'mdi:bird', // Black grouse
+    'Havsörn': 'mdi:eagle', // Sea eagle
+    'Mink': 'mdi:otter', // Mink - use otter as proxy
+    'Trana': 'mdi:bird', // Crane
+    'Grågås': 'mdi:duck', // Greylag goose
+    'Hare': 'mdi:rabbit', // Hare
+    'Fälthare': 'mdi:rabbit', // Mountain hare
+    'Ejder': 'mdi:duck', // Eider duck
     default: 'mdi:paw'
 };
 
@@ -589,16 +589,16 @@ function renderStatsMap() {
         statsMap = new maplibregl.Map({
             container: 'stats-map-gl',
             style: MAP_STYLE_URL,
-            center: [16, 62.5],
-            zoom: 4.4,
+            center: [15.5, 62.5],
+            zoom: 5.2,
             interactive: false,
             attributionControl: false,
             renderWorldCopies: false
         });
 
         statsMap.on('load', () => {
-            // Tighter bounds and more zoom for better Sweden focus
-            statsMap.fitBounds([[11, 55.5], [24, 69]], { padding: 20, maxZoom: 4.8 });
+            // Match main map's tight Sweden focus
+            statsMap.fitBounds([[10, 54.5], [26, 70.5]], { padding: 40, maxZoom: 5.2 });
             addStatsLayer(data);
         });
     } else if (statsMap.isStyleLoaded()) {
@@ -618,7 +618,8 @@ function buildStatsGeoJson() {
                 coordinates: [camera.location.lng, camera.location.lat]
             },
             properties: {
-                detections: camera.detections.length
+                detections: camera.detections.length,
+                highlighted: false
             }
         }))
     };
