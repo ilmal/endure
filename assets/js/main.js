@@ -60,6 +60,9 @@ const translations = {
         legendMedium: "5–7 träffar",
         legendLarge: "8+ träffar",
         topAnimals: "Topp djur",
+        filterAll: "Alla",
+        filterTop: "Topp 5",
+        filterAlpha: "A-Ö",
         footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Skapad med hjälp av LLMs (Large Language Models)</small> | <a href=\"https://github.com/your-repo\" target=\"_blank\">GitHub Repo</a>",
         coordinates: "Koordinater",
         noObservations: "Inga registrerade observationer ännu.",
@@ -96,6 +99,9 @@ const translations = {
         legendMedium: "5–7 hits",
         legendLarge: "8+ hits",
         topAnimals: "Top Animals",
+        filterAll: "All",
+        filterTop: "Top 5",
+        filterAlpha: "A-Z",
         footer: "<strong>Hållut - A4</strong><br>Mock Prototype - November 2025<br><small>Created with assistance from LLMs (Large Language Models)</small> | <a href=\"https://github.com/your-repo\" target=\"_blank\">GitHub Repo</a>",
         coordinates: "Coordinates",
         noObservations: "No registered observations yet.",
@@ -138,8 +144,8 @@ function initMap() {
     map = new maplibregl.Map({
         container: 'map',
         style: MAP_STYLE_URL,
-        center: [15.5, 63],
-        zoom: 4.5,
+        center: [15.5, 62.5],
+        zoom: 5.2,
         attributionControl: false,
         pitchWithRotate: false,
         dragRotate: false,
@@ -475,21 +481,85 @@ function loadStats() {
             animalCounts[detection.animal] = (animalCounts[detection.animal] || 0) + 1;
         });
     });
-    const topAnimals = Object.entries(animalCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
-    const list = document.getElementById('top-animals');
-    list.innerHTML = '';
-    topAnimals.forEach(([animal, count]) => {
-        const li = document.createElement('li');
-        li.textContent = `${animal}: ${count}`;
-        list.appendChild(li);
-    });
-
+    renderAnimalStats(animalCounts, 'all');
+    setupAnimalFilters(animalCounts);
     renderStatsMap();
     if (statsMap) {
         statsMap.resize();
     }
 }
+
+function renderAnimalStats(animalCounts, filter = 'all') {
+    const list = document.getElementById('top-animals');
+    list.innerHTML = '';
+    
+    let animals = Object.entries(animalCounts);
+    
+    if (filter === 'top') {
+        animals = animals.sort((a, b) => b[1] - a[1]).slice(0, 5);
+    } else if (filter === 'alpha') {
+        animals = animals.sort((a, b) => a[0].localeCompare(b[0], 'sv'));
+    } else {
+        animals = animals.sort((a, b) => b[1] - a[1]);
+    }
+    
+    animals.forEach(([animal, count]) => {
+        const li = document.createElement('li');
+        const icon = animalIconMap[animal] || animalIconMap.default;
+        
+        li.innerHTML = `
+            <div class="animal-name">
+                <span class="animal-icon iconify" data-icon="${icon}"></span>
+                <span>${animal}</span>
+            </div>
+            <span class="animal-count">${count}</span>
+        `;
+        
+        li.addEventListener('click', () => {
+            filterDetectionsByAnimal(animal);
+        });
+        
+        list.appendChild(li);
+    });
+    
+    if (typeof Iconify !== 'undefined') {
+        Iconify.scan();
+    }
+}
+
+function setupAnimalFilters(animalCounts) {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const filter = btn.dataset.filter;
+            renderAnimalStats(animalCounts, filter);
+        });
+    });
+}
+
+function filterDetectionsByAnimal(animal) {
+    navigateTo('home');
+    
+    setTimeout(() => {
+        const cameras = fakeData.cameras.filter(camera => 
+            camera.detections.some(d => d.animal === animal)
+        );
+        
+        if (cameras.length > 0) {
+            const firstCamera = cameras[0];
+            activeCameraId = firstCamera.id;
+            updateSidebar(firstCamera);
+            highlightMarkers(id => id === firstCamera.id);
+            flyToCamera(firstCamera);
+        }
+    }, 100);
+}
+
 function renderStatsMap() {
     const container = document.getElementById('stats-map-gl');
     if (!container || typeof maplibregl === 'undefined') return;
@@ -637,6 +707,14 @@ function updateLanguage() {
     document.querySelector('.stats-map-legend span:nth-child(2)').textContent = translations[currentLang].legendMedium;
     document.querySelector('.stats-map-legend span:nth-child(3)').textContent = translations[currentLang].legendLarge;
     document.querySelector('.stats-insights h2').textContent = translations[currentLang].topAnimals;
+    
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    if (filterBtns.length > 0) {
+        filterBtns[0].textContent = translations[currentLang].filterAll;
+        filterBtns[1].textContent = translations[currentLang].filterTop;
+        filterBtns[2].textContent = translations[currentLang].filterAlpha;
+    }
+    
     document.querySelector('footer p').innerHTML = translations[currentLang].footer;
     
     const langToggle = document.getElementById('lang-toggle');
