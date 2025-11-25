@@ -59,19 +59,47 @@ const animalDistribution = {
     }
 };
 
-const suffixes = [
-    'Aurora Ridge', 'Midnight Plateau', 'Pine Shield', 'River Crossing', 'High Valley', 'Forest Veins',
-    'Skärgård Watch', 'Meadow Grid', 'Ridge Gate', 'Coastal Dune', 'Steppe Sweep', 'Crest', 'Arctic Bay',
-    'Peak Outlook', 'Glen Path', 'Lake Shore', 'Wild Trail', 'Eagle Nest', 'Fox Den', 'Bear Cave', 'Wolf Hollow',
-    'Owl Perch', 'Deer Meadow', 'Bird Sanctuary', 'Paw Trail', 'Northern Light', 'Mountain Pass', 'Valley Watch',
-    'Stream Point', 'Forest Edge', 'Hilltop', 'Deep Woods', 'Clearwater', 'Stone Bridge', 'Moss Rock',
-    'Silent Grove', 'Windswept Peak', 'Hidden Glade', 'Ancient Oak', 'Whispering Pines'
+const namePrefixes = [
+    'Norra', 'Södra', 'Östra', 'Västra', 'Nedre', 'Övre', 'Inre', 'Yttre', 'Stora', 'Lilla'
 ];
 
-// Function to generate a random timestamp in the last 7 days (from Nov 25, 2025)
+const nameMiddles = [
+    'Skogen', 'Ängen', 'Åsen', 'Berget', 'Myren', 'Sjön', 'Bäcken', 'Ån',
+    'Heden', 'Lunden', 'Backen', 'Dalen', 'Slätten', 'Höjden', 'Udden', 'Viken',
+    'Stigen', 'Vägen', 'Gränsen', 'Kanten', 'Mitten', 'Hörnet'
+];
+
+const nameSuffixes = [
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'
+];
+
+function generateCameraName() {
+    const usePrefix = Math.random() > 0.1; // 90% chance of having prefix
+    const useSuffix = Math.random() > 0.4; // 60% chance of having suffix
+    
+    let name = 'Kamera';
+    
+    if (usePrefix) {
+        const prefix = namePrefixes[Math.floor(Math.random() * namePrefixes.length)];
+        name += ' ' + prefix;
+    }
+    
+    const middle = nameMiddles[Math.floor(Math.random() * nameMiddles.length)];
+    name += ' ' + middle;
+    
+    if (useSuffix) {
+        const suffix = nameSuffixes[Math.floor(Math.random() * nameSuffixes.length)];
+        name += ' ' + suffix;
+    }
+    
+    return name;
+}
+
+// Function to generate a random timestamp in the last year days (from Nov 25, 2025)
 function generateTimestamp() {
     const now = new Date('2025-11-25T00:00:00');
-    const randomMs = Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000);
+    const randomMs = Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000);
     const date = new Date(now - randomMs);
     return date.toISOString().slice(0, 19).replace('T', ' ');
 }
@@ -207,8 +235,6 @@ function generateDetection(lat) {
 // Function to generate a single camera (async with API verification)
 let cameraIdCounter = 13;
 async function generateCamera(index, total) {
-    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-    
     // Generate and verify coordinates are in Sweden
     const { lat, lng } = await generateValidSwedishCoordinates();
     
@@ -224,7 +250,7 @@ async function generateCamera(index, total) {
     return {
         id: cameraIdCounter++,
         location: { lat, lng },
-        name: `Kamera ${suffix}`,
+        name: generateCameraName(),
         detections: detections
     };
 }
