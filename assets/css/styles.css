@@ -596,6 +596,13 @@ main {
     transform: translateX(4px);
 }
 
+.stats-insights li.selected {
+    background: rgba(246, 193, 107, 0.25);
+    border-left-color: var(--sunset);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(246, 193, 107, 0.3);
+}
+
 .animal-name {
     display: flex;
     align-items: center;
