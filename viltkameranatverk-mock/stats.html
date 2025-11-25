@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik - ViltKameraNätverk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
+        <nav>
+            <a href="index.html">Hem/Karta</a>
+            <a href="about.html">Om Projektet</a>
+            <a href="stats.html" class="active">Statistik</a>
+            <a href="help.html">Hjälp</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-card" style="margin-bottom:32px;">
+            <h1>Statistik & insikter</h1>
+            <p>
+                Sidan summerar mock-datan som driver dashboarden. Använd siffrorna som diskussionsunderlag för vilka KPI:er
+                som bör följas upp i ett riktigt införande.
+            </p>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <h3>Totalt Kameror</h3>
+                <p class="stat-value">5</p>
+            </article>
+            <article class="stat-card">
+                <h3>Totalt Detektioner</h3>
+                <p class="stat-value">7</p>
+                <div class="progress-bar"><span style="width:60%"></span></div>
+            </article>
+            <article class="stat-card">
+                <h3>Validerade observationer</h3>
+                <p class="stat-value">0</p>
+                <div class="progress-bar"><span style="width:0%"></span></div>
+            </article>
+        </section>
+
+        <section class="info-grid" style="margin-top:30px;">
+            <article class="info-card">
+                <h2>Topp arter</h2>
+                <ul>
+                    <li>Rådjur</li>
+                    <li>Räv</li>
+                    <li>Vildsvin</li>
+                    <li>Grävling</li>
+                    <li>Varg</li>
+                </ul>
+            </article>
+            <article class="info-card">
+                <h2>Kameror per region</h2>
+                <ul>
+                    <li>Götaland: 3</li>
+                    <li>Norrland: 2</li>
+                </ul>
+                <div id="stats-map" style="margin-top:14px;">
+                    <svg viewBox="0 0 320 780">
+                        <defs>
+                            <linearGradient id="mini-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ecfdf4" />
+                                <stop offset="100%" stop-color="#8ad0a6" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M180 10 L210 70 L190 110 L215 170 L195 210 L225 270 L205 330 L230 380 L210 450 L240 520 L215 600 L250 690 L220 760 L160 770 L120 720 L100 650 L85 560 L60 500 L80 430 L60 360 L90 300 L70 240 L105 180 L90 140 L120 90 L150 50 Z" fill="url(#mini-gradient)" stroke="rgba(29,91,44,0.8)" stroke-width="2" />
+                        <circle cx="200" cy="220" r="6" fill="#fff" stroke="#1d5b2c" />
+                        <circle cx="150" cy="340" r="6" fill="#fff" stroke="#1d5b2c" />
+                        <circle cx="130" cy="470" r="6" fill="#fff" stroke="#1d5b2c" />
+                        <circle cx="190" cy="560" r="6" fill="#fff" stroke="#1d5b2c" />
+                        <circle cx="210" cy="660" r="6" fill="#fff" stroke="#1d5b2c" />
+                    </svg>
+                </div>
+            </article>
+            <article class="info-card">
+                <h2>Miljöfördelar</h2>
+                <ul>
+                    <li>Mindre behov av helikopter- och biltransporter.</li>
+                    <li>Bättre beslutsunderlag för adaptiv förvaltning.</li>
+                    <li>Snabb upptäckt av skyddsvärda arter.</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>Mock Prototype av Group A4 - November 2025 | <a href="https://github.com/your-repo" target="_blank">GitHub Repo</a></p>
+    </footer>
+</body>
+</html>

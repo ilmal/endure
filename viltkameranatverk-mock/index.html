@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViltKameraNätverk - Mock Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="assets/images/logo.svg" alt="Logo" style="height: 30px; margin-right: 10px;"> ViltKameraNätverk</div>
+        <nav>
+            <a href="#home" class="active">Hem/Karta</a>
+            <a href="#about">Om Projektet</a>
+            <a href="#stats">Statistik</a>
+            <a href="#help">Hjälp</a>
+        </nav>
+        <div class="search">
+            <input type="text" id="search-input" placeholder="Sök kameror...">
+            <ul id="search-suggestions"></ul>
+        </div>
+    </header>
+
+    <main>
+        <div id="home" class="page active">
+            <section id="home-hero">
+                <article class="hero-card">
+                    <h3>Aktiva kameror</h3>
+                    <p class="hero-metric" id="hero-cameras">0</p>
+                    <small>Uppdaterad i realtid från mock-datan</small>
+                </article>
+                <article class="hero-card">
+                    <h3>Detektioner senaste veckan</h3>
+                    <p class="hero-metric" id="hero-detections">0</p>
+                    <small>AI-filtrerade observationer</small>
+                </article>
+                <article class="hero-card">
+                    <h3>Valideringsgrad</h3>
+                    <p class="hero-metric" id="hero-validation">0%</p>
+                    <small>Människor som bekräftat AI-resultat</small>
+                </article>
+            </section>
+
+            <div id="map-container">
+                <div id="map"></div>
+                <aside id="sidebar">
+                    <div class="sidebar-headline">
+                        <h2 id="sidebar-title">Välj en kamera</h2>
+                        <span id="sidebar-count">0 detektioner</span>
+                    </div>
+                    <p id="sidebar-description">Klicka på en kamera i kartan eller använd söket för att se detaljer.</p>
+                    <div id="detections-list"></div>
+                </aside>
+            </div>
+        </div>
+
+        <div id="about" class="page">
+            <h1>Om Nationellt nätverk av jaktkameror</h1>
+            <p>
+                Det nationella nätverket binder samman fältkameror från Skåne till Lappland. AI-stödd analys hjälper
+                Naturvårdsverket, forskare och jägare att snabbt upptäcka förändringar i bestånd, smittspridning och
+                skyddsvärd fauna. Plattformen i denna mockup visar hur datan kan presenteras på ett intuitivt sätt.
+            </p>
+            <div class="info-grid" style="margin-top:24px;">
+                <article class="info-card">
+                    <h3>Problemidentifiering</h3>
+                    <ul>
+                        <li>Stora avstånd gör manuell inventering ineffektiv.</li>
+                        <li>Händelser missas när kameror läses av för sent.</li>
+                        <li>Data är spridd mellan ideella aktörer och myndigheter.</li>
+                    </ul>
+                    <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80" alt="Svensk skog">
+                </article>
+                <article class="info-card">
+                    <h3>Idéskiss</h3>
+                    <p>
+                        En molnkopplad plattform där kameror skickar bilder och metadata direkt till AI-modeller
+                        tränade på nordiskt vilt. Resultat och kartlager synkas i realtid så att användare kan filtrera,
+                        validera och exportera data.
+                    </p>
+                    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80" alt="Varg i vildmark">
+                </article>
+                <article class="info-card">
+                    <h3>Effekter</h3>
+                    <p>
+                        Tidiga varningar om invasiva arter, bättre beslutsunderlag för avskjutning och förbättrad
+                        samexistens mellan människa och djur. Plattformen stödjer också delning till forskningsprojekt.
+                    </p>
+                    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80" alt="Rådjur i skymning">
+                </article>
+            </div>
+        </div>
+
+        <div id="stats" class="page">
+            <h1>Statistik Översikt</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Totalt Kameror</h3>
+                    <p class="stat-value" id="total-cameras">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Totalt Detektioner</h3>
+                    <p class="stat-value" id="total-detections">0</p>
+                    <div class="progress-bar"><span id="detection-progress" style="width:0%"></span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Validerade observationer</h3>
+                    <p class="stat-value" id="validated-count">0</p>
+                    <div class="progress-bar"><span id="validation-progress" style="width:0%"></span></div>
+                </div>
+            </div>
+            <h2>Topp Djur</h2>
+            <ul id="top-animals"></ul>
+            <h2>Kamera Platser</h2>
+            <div id="stats-map">
+                <svg id="stats-sweden-map" viewBox="0 0 320 780"></svg>
+            </div>
+            <h2>Miljöfördelar</h2>
+            <ul>
+                <li>Minskad mänsklig störning av vilt</li>
+                <li>Snabbare respons på populationsförändringar</li>
+                <li>Bättre data för forskningsändamål</li>
+            </ul>
+        </div>
+
+        <div id="help" class="page">
+            <h1>Hjälp & FAQ</h1>
+            <div class="info-grid">
+                <article class="info-card">
+                    <h3>Hur använder jag kartan?</h3>
+                    <p>Kamerapunkterna följer Sveriges siluett. Hover för att se namn, klicka för detaljer och foton.</p>
+                    <p>Sök efter ort eller kameranamn för att hoppa direkt.</p>
+                </article>
+                <article class="info-card">
+                    <h3>Vad gör Bekräfta/Neka?</h3>
+                    <p>
+                        Funktionen simulerar mänsklig kvalitetssäkring. Dina val sparas i browserns localStorage och
+                        används för att visa valideringsgrad i statistiken.
+                    </p>
+                </article>
+                <article class="info-card">
+                    <h3>Integritet</h3>
+                    <p>
+                        I ett skarpt system maskeras människor och fordon automatiskt innan data distribueras.
+                        Kameraägare kan även sätta spärrzoner och automatisk gallring.
+                    </p>
+                    <p><strong>Kontakt:</strong> groupa4@example.com</p>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Mock Prototype av Group A4 - November 2025 | <a href="https://github.com/your-repo" target="_blank">GitHub Repo</a></p>
+    </footer>
+
+    <div id="photo-modal" class="modal"></div>
+
+    <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
